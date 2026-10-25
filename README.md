@@ -66,7 +66,7 @@ Build the following routes:
 
 ## Tools and Resources
 
-- **GitHub Repo**: *Link to be provided*
+- **GitHub Repo**: _Link to be provided_
 - **Flask Quickstart**: [https://flask.palletsprojects.com/en/stable/quickstart/](https://flask.palletsprojects.com/en/stable/quickstart/)
 
 ---
@@ -147,3 +147,56 @@ Build the following routes:
 - Delete stale branches on GitHub.
 - Remove unnecessary or commented-out code.
 - Update `.gitignore` if needed to exclude sensitive data
+
+# Flask Contracts Lab
+
+A small Flask API for a company that manages contracts between two parties. It exposes contract details on request, and confirms whether a customer exists without revealing any customer data, since that data is sensitive.
+
+## Features
+
+| Route                           | Response                       | Meaning                            |
+| ------------------------------- | ------------------------------ | ---------------------------------- |
+| `GET /contract/<id>`            | **200** + contract information | Contract with that id exists       |
+| `GET /contract/<id>`            | **404**                        | No contract with that id           |
+| `GET /customer/<customer_name>` | **204**, empty body            | Customer exists (details withheld) |
+| `GET /customer/<customer_name>` | **404**                        | Customer not found                 |
+
+Contracts and customers are held in in-memory lists in `server/app.py`.
+
+## Setup
+
+```bash
+pipenv install
+pipenv shell
+```
+
+## Usage
+
+Start the server:
+
+```bash
+python server/app.py
+```
+
+It runs on `http://localhost:5555`. Example requests:
+
+```bash
+curl -i localhost:5555/contract/1      # 200 This contract is for John and building a shed
+curl -i localhost:5555/contract/100    # 404
+curl -i localhost:5555/customer/bob    # 204 (no body)
+curl -i localhost:5555/customer/mario  # 404
+```
+
+## Testing
+
+```bash
+pytest
+```
+
+![All tests passing and route responses](assets/tests-passing.png)
+
+## Status codes used
+
+- **200 OK**: the request succeeded and the response carries data.
+- **204 No Content**: the request succeeded, but there is deliberately no data to send.
+- **404 Not Found**: the requested resource does not exist.
